@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+pydantic
+loguru
+dependency-injector
+httpx
+pyyaml
+python-dotenv
+rich
+pytest
+pytest-asyncio
+black
+ruff
+mypy

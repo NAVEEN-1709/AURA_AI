@@ -1,0 +1,18 @@
+[project]
+name = "aura-ai"
+version = "0.1.0"
+description = "Artificial Universal Responsive Assistant"
+requires-python = ">=3.12"
+
+[tool.black]
+line-length = 88
+
+[tool.ruff]
+line-length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
