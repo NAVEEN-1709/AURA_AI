@@ -1,30 +1,32 @@
 """
 AURA AI
-Artificial Universal Responsive Assistant
 
 Main Entry Point
 """
 
-from datetime import datetime
-
+from core.config_loader import get_settings
 from core.logger import logger
 
 
 def print_banner() -> None:
-    """Display startup banner."""
+    settings = get_settings()
+
     print("=" * 60)
-    print("                     AURA AI")
-    print("      Artificial Universal Responsive Assistant")
+    print(f"           {settings.app.name}")
+    print(f"           Version {settings.app.version}")
     print("=" * 60)
 
 
 def startup() -> None:
-    """Initialize application."""
-    logger.info("Starting AURA")
-    logger.info(f"Startup Time: {datetime.now()}")
-    logger.info("Loading configuration...")
-    logger.info("Initializing core systems...")
-    logger.success("AURA is online.")
+    settings = get_settings()
+
+    logger.info("Starting {}", settings.app.name)
+    logger.info("Environment: {}", settings.app.environment)
+    logger.info("Default LLM: {}", settings.llm.default_provider)
+    logger.info("Wake Word: {}", settings.speech.wake_word)
+
+    logger.success("Configuration Loaded")
+    logger.success("AURA is online")
 
 
 def main() -> None:

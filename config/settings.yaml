@@ -1,0 +1,23 @@
+app:
+  name: "AURA AI"
+  version: "0.1.0"
+  environment: "development"
+
+logging:
+  level: "INFO"
+  file: "logs/aura.log"
+
+llm:
+  default_provider: "openai"
+  temperature: 0.7
+  max_tokens: 4096
+
+speech:
+  wake_word: "Hey Aura"
+  language: "en"
+
+database:
+  sqlite_path: "database/aura.db"
+
+ui:
+  theme: "dark"
