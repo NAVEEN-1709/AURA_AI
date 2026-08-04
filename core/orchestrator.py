@@ -10,6 +10,7 @@ from agents.registry import AgentRegistry
 from core.config_loader import Settings, get_settings
 from core.event_bus import EventBus
 from core.logger import logger
+from agents.conversation_agent import ConversationAgent
 
 
 class Orchestrator:
@@ -63,7 +64,6 @@ class Orchestrator:
             "Wake Word   : {}",
             self.settings.speech.wake_word,
         )
-
         logger.success("Configuration loaded successfully.")
         logger.success("Core systems initialized.")
 
@@ -71,18 +71,21 @@ class Orchestrator:
         """
         Start the AURA application.
         """
-
         logger.info("Starting AURA...")
-
         await self.initialize()
-
         logger.success("AURA started successfully.")
 
     async def shutdown(self) -> None:
         """
         Shutdown AURA gracefully.
         """
-
         logger.info("Shutting down AURA...")
-
         logger.success("AURA shutdown complete.")
+
+    async def initialize(self) -> None:
+        logger.info("Initializing AURA...")
+        conversation = ConversationAgent()
+        self.registry.register(conversation)
+        await self.registry.initialize_all()
+        await self.registry.start_all()
+        logger.success("All agents started.")
