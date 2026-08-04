@@ -1,42 +1,31 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-
 # Virtual Environment
 .venv/
 
 # Environment Variables
 .env
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
 # Logs
-logs/
-*.log
+logs/*.log
 
-# IDE
+# SQLite
+*.db
+
+# VS Code
 .vscode/
-.idea/
 
-# OS
-.DS_Store
-Thumbs.db
-
-# Testing
+# Pytest
 .pytest_cache/
-
-# MyPy
-.mypy_cache/
-
-# Ruff
-.ruff_cache/
 
 # Coverage
 .coverage
 htmlcov/
 
-# SQLite
-*.db
-
-# Build
-build/
-dist/
+# OS
+.DS_Store
+Thumbs.db
