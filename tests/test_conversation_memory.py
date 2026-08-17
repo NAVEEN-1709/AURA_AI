@@ -1,5 +1,5 @@
 """
-Test Conversation Agent.
+Test AURA conversation memory.
 """
 
 import asyncio
@@ -11,12 +11,10 @@ from llm.router import LLMRouter
 
 async def main() -> None:
 
-    # Create Ollama provider
     ollama = OllamaProvider(
         model="llama3.2:3b"
     )
 
-    # Create LLM Router
     router = LLMRouter(
         providers={
             "ollama": ollama,
@@ -24,7 +22,6 @@ async def main() -> None:
         default_provider="ollama",
     )
 
-    # Create Conversation Agent
     agent = ConversationAgent(
         llm_router=router,
     )
@@ -33,14 +30,18 @@ async def main() -> None:
     await agent.start()
 
     response = await agent.process_message(
-        "Hello Aura. Who are you?"
+        "My name is Naveen."
     )
 
     print()
-    print("=" * 60)
-    print("AURA")
-    print("=" * 60)
-    print(response)
+    print("AURA >", response)
+
+    response = await agent.process_message(
+        "What is my name?"
+    )
+
+    print()
+    print("AURA >", response)
 
     await agent.stop()
     await agent.shutdown()

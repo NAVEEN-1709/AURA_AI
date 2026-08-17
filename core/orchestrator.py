@@ -3,89 +3,133 @@ AURA AI
 
 Orchestrator
 
-Coordinates all core systems and agents.
+Coordinates AURA's core systems and agents.
 """
 
+from agents.conversation_agent import ConversationAgent
 from agents.registry import AgentRegistry
 from core.config_loader import Settings, get_settings
 from core.event_bus import EventBus
 from core.logger import logger
-from agents.conversation_agent import ConversationAgent
+from llm.providers.ollama_provider import OllamaProvider
+from llm.router import LLMRouter
+from memory.agent import MemoryAgent
+from memory.database import MemoryDatabase
+from memory.manager import MemoryManager
 
 
 class Orchestrator:
     """
-    Coordinates all AURA components.
-    Responsible for creating and managing the core systems.
+    Coordinates all major AURA components.
     """
 
     def __init__(self) -> None:
-        """
-        Create all core components.
-        """
+        """Create AURA's core infrastructure."""
 
         logger.info("Creating Orchestrator...")
 
-        # Load application settings
+        # Configuration
         self.settings: Settings = get_settings()
 
-        # Create Event Bus
+        # Core infrastructure
         self.event_bus = EventBus()
-
-        # Create Agent Registry
         self.registry = AgentRegistry()
 
-        logger.success("Orchestrator created successfully.")
+        # LLM infrastructure
+        self.ollama_provider = OllamaProvider(
+            model="llama3.2:3b"
+        )
+
+        self.llm_router = LLMRouter(
+            providers={
+                "ollama": self.ollama_provider,
+            },
+            default_provider="ollama",
+        )
+
+        # Persistent memory infrastructure
+        self.memory_database = MemoryDatabase(
+            database_path="database/aura_memory.db"
+        )
+
+        self.memory_manager = MemoryManager(
+            database=self.memory_database
+        )
+
+        # Agents
+        self.memory_agent = MemoryAgent(
+            memory_manager=self.memory_manager
+        )
+
+        self.conversation_agent = ConversationAgent(
+            llm_router=self.llm_router,
+            memory_agent=self.memory_agent,
+        )
+
+        logger.success(
+            "Orchestrator created successfully."
+        )
 
     async def initialize(self) -> None:
         """
-        Initialize all core systems.
+        Initialize AURA components and agents.
         """
 
         logger.info("Initializing AURA...")
 
-        logger.info(
-            "Application : {} {}",
-            self.settings.app.name,
-            self.settings.app.version,
+        # Register agents.
+        self.registry.register(
+            self.memory_agent
         )
 
-        logger.info(
-            "Environment : {}",
-            self.settings.app.environment,
+        self.registry.register(
+            self.conversation_agent
         )
 
-        logger.info(
-            "Default LLM : {}",
-            self.settings.llm.default_provider,
-        )
+        # Initialize all agents.
+        await self.registry.initialize_all()
 
-        logger.info(
-            "Wake Word   : {}",
-            self.settings.speech.wake_word,
+        logger.success(
+            "All agents initialized."
         )
-        logger.success("Configuration loaded successfully.")
-        logger.success("Core systems initialized.")
 
     async def start(self) -> None:
         """
         Start the AURA application.
         """
+
         logger.info("Starting AURA...")
+
         await self.initialize()
-        logger.success("AURA started successfully.")
+
+        await self.registry.start_all()
+
+        logger.success(
+            "AURA started successfully."
+        )
+
+    async def stop(self) -> None:
+        """
+        Stop all running agents.
+        """
+
+        logger.info("Stopping AURA...")
+
+        await self.registry.stop_all()
+
+        logger.success(
+            "AURA stopped."
+        )
 
     async def shutdown(self) -> None:
         """
         Shutdown AURA gracefully.
         """
-        logger.info("Shutting down AURA...")
-        logger.success("AURA shutdown complete.")
 
-    async def initialize(self) -> None:
-        logger.info("Initializing AURA...")
-        conversation = ConversationAgent()
-        self.registry.register(conversation)
-        await self.registry.initialize_all()
-        await self.registry.start_all()
-        logger.success("All agents started.")
+        logger.info("Shutting down AURA...")
+
+        await self.registry.shutdown_all()
+
+        logger.success(
+            "AURA shutdown complete."
+        )
